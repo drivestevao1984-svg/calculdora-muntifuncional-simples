@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Testes Enxuto</title>
+    <style>
+        :root {
+            --bg: #121212; --card: #1a1a1a; --purple: #8E44AD; --purple-dark: #5B2D82;
+            --text: #F5F2EB; --ochre: #CC7722; --success: #2ecc71; --error: #e74c3c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 30px 15px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 850px; background: var(--card); border: 2px solid var(--purple-dark); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(91, 45, 130, 0.2); }
+        h1 { text-align: center; font-size: 24px; margin-bottom: 20px; }
+        h2 { font-size: 16px; color: var(--purple); margin: 25px 0 10px 0; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .bar { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        button { background: var(--ochre); color: var(--bg); border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-right: 8px; }
+        button.secondary { background: #333; color: var(--text); font-weight: 600; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .cards { display: flex; gap: 10px; margin-bottom: 20px; }
+        .card { flex: 1; padding: 12px; border-radius: 8px; text-align: center; font-weight: 700; font-size: 14px; background: #222; border: 1px solid #333; }
+        .card.ok { color: var(--success); border-color: rgba(46, 204, 113, 0.3); }
+        .card.err { color: var(--error); border-color: rgba(231, 76, 60, 0.3); }
+        table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 6px; overflow: hidden; }
+        th, td { padding: 10px; text-align: left; font-size: 13px; border-bottom: 1px solid #222; }
+        th { background: rgba(91, 45, 130, 0.3); color: var(--text); font-size: 11px; text-transform: uppercase; }
+        .active { background: rgba(204, 119, 34, 0.1) !important; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; background: #555; color: #aaa; }
+        .badge.pass { background: var(--success); color: var(--bg); }
+        .badge.fail { background: var(--error); color: #fff; }
+        .badge.run { background: var(--ochre); color: var(--bg); }
+        .log { background: #090909; border-radius: 6px; padding: 12px; font-family: monospace; font-size: 11px; max-height: 150px; overflow-y: auto; color: #aaa; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Dashboard Unitário de Testes</h1>
+
+        <div class="bar">
+            <div>
+                <button id="btn-run">Percorrer Cenários</button>
+                <button id="btn-clear" class="secondary">Limpar</button>
+            </div>
+            <div><strong>Status:</strong> <span id="status" style="color: var(--ochre);">Pronto</span></div>
+        </div>
+
+        <div class="cards">
+            <div class="card">Cenários: <span id="total-lbl">13</span></div>
+            <div class="card ok">Sucessos: <span id="pass-lbl">0</span></div>
+            <div class="card err">Falhas: <span id="fail-lbl">0</span></div>
+        </div>
+
+        <h2>CT01 & CT02: Testes Funcionais e Regras Matemáticas</h2>
+        <table>
+            <thead>
+                <tr><th style="width:10%">ID</th><th style="width:50%">Cenário / Entradas</th><th style="width:15%">Esperado</th><th style="width:15%">Obtido</th><th style="width:10%">Status</th></tr>
+            </thead>
+            <tbody id="grid-funcionais"></tbody>
+        </table>
+
+        <h2>CT03 & CT04: Tratamento de Erros e Máscaras do Usuário</h2>
+        <table>
+            <thead>
+                <tr><th style="width:10%">ID</th><th style="width:50%">Cenário / Entradas</th><th style="width:15%">Esperado</th><th style="width:15%">Obtido</th><th style="width:10%">Status</th></tr>
+            </thead>
+            <tbody id="grid-erros"></tbody>
+        </table>
+
+        <h2>Logs de Auditoria</h2>
+        <div class="log" id="log-console">[SISTEMA] Pronto para processar suítes.</div>
+    </div>
+
+    <script>
+        const suites = [
+            { id: "1.1", tipo: "F", desc: "Adição de inteiros positivos", n1: "5", n2: "3", op: "soma", exp: "8" },
+            { id: "1.2", tipo: "F", desc: "Subtração resultando em positivo", n1: "10", n2: "4", op: "subtracao", exp: "6" },
+            { id: "1.3", tipo: "F", desc: "Multiplicação simples", n1: "6", n2: "7", op: "multiplicacao", exp: "42" },
+            { id: "1.4", tipo: "F", desc: "Divisão exata", n1: "20", n2: "4", op: "divisao", exp: "5" },
+            { id: "2.1", tipo: "F", desc: "Operações com números decimais", n1: "5.5", n2: "2.15", op: "soma", exp: "7,65" },
+            { id: "2.2", tipo: "F", desc: "Uso de números negativos", n1: "-8", n2: "2", op: "multiplicacao", exp: "-16" },
+            { id: "2.3", tipo: "F", desc: "Subtração gerando resultado negativo", n1: "3", n2: "10", op: "subtracao", exp: "-7" },
+            
+            { id: "3.1", tipo: "E", desc: "Divisão por Zero (Alerta Pop-up)", n1: "5", n2: "0", op: "divisao", exp: "Erro (Div/0)" },
+            { id: "3.2", tipo: "E", desc: "Operação não selecionada", n1: "5", n2: "3", op: "", exp: "Selecione!" },
+            { id: "3.3", tipo: "E", desc: "Entrada N1 inválida ou vazia", n1: "", n2: "3", op: "soma", exp: "N1 inválido" },
+            { id: "4.1", tipo: "E", desc: "Tentativa de inserir Letra (Filtro)", n1: "10A", n2: "2", op: "soma", exp: "12" },
+            { id: "4.2", tipo: "E", desc: "Múltiplos pontos decimais (5.5.5 -> 5.5)", n1: "5.5.5", n2: "1", op: "soma", exp: "6,5" },
+            { id: "4.3", tipo: "E", desc: "Sinal de menos fora de posição (5-5)", n1: "5-5", n2: "5", op: "subtracao", exp: "50" }
+        ];
+
+        window.alert = function() { }; // Abafa e intercepta os alerts sem travar a thread
+
+        function renderizarInterface() {
+            const fBody = document.getElementById('grid-funcionais');
+            const eBody = document.getElementById('grid-erros');
+            fBody.innerHTML = ''; eBody.innerHTML = '';
+
+            suites.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.id = `row-${c.id}`;
+                tr.innerHTML = `
+                    <td><strong>${c.id}</strong></td>
+                    <td>${c.desc}<br><small style="color:#666">N1: ${c.n1 || '[Vazio]'} | N2: ${c.n2 || '[Vazio]'} | Op: ${c.op || '[Nenhuma]'}</small></td>
+                    <td><code>${c.exp}</code></td>
+                    <td id="val-${c.id}">-</td>
+                    <td><span id="bad-${c.id}" class="badge">Pendente</span></td>
+                `;
+                if (c.tipo === "F") fBody.appendChild(tr);
+                else eBody.appendChild(tr);
+            });
+        }
+
+        function filtrarEntrada(val) {
+            let v = val.replace(/[^0-9.,-]/g, '');
+            if (v.indexOf('-') > 0) v = v.substring(0, v.indexOf('-')) + v.substring(v.indexOf('-') + 1);
+            const sep = v.match(/[.,]/);
+            if (sep) {
+                const idx = v.indexOf(sep);
+                v = v.substring(0, idx + 1) + v.substring(idx + 1).replace(/[.,]/g, '');
+            }
+            return v;
+        }
+
+        function simularCalculadora(n1, n2, op) {
+            n1 = filtrarEntrada(n1); n2 = filtrarEntrada(n2);
+            n1 = n1.replace(',', '.'); n2 = n2.replace(',', '.');
+            const num1 = parseFloat(n1); const num2 = parseFloat(n2);
+            let res = 0;
+
+            if (!op) return "Selecione!";
+            if (isNaN(num1)) return "N1 inválido";
+
+            switch (op) {
+                case 'soma': res = num1 + (isNaN(num2) ? 0 : num2); break;
+                case 'subtracao': res = num1 - (isNaN(num2) ? 0 : num2); break;
+                case 'multiplicacao': res = num1 * (isNaN(num2) ? 1 : num2); break;
+                case 'divisao': 
+                    if (num2 === 0) return "Erro (Div/0)";
+                    res = num1 / num2; 
+                    break;
+                default: res = 0;
+            }
+            return !isNaN(res) ? Number(res.toFixed(4)).toString().replace('.', ',') : "Erro";
+        }
+
+        function log(msg, tipo = '') {
+            const consoleBox = document.getElementById('log-console');
+            const p = document.createElement('div');
+            p.className = `log-line ${tipo}`;
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            consoleBox.appendChild(p);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        function limparDashboard() {
+            document.getElementById('pass-lbl').textContent = "0";
+            document.getElementById('fail-lbl').textContent = "0";
+            document.getElementById('status').textContent = "Pronto";
+            document.getElementById('status').style.color = "var(--ochre)";
+            document.getElementById('log-console').innerHTML = '<div class="log-line info">[SISTEMA] Estado limpo. Pronto para testes.</div>';
+            renderizarInterface();
+        }
+
+        async function iniciarEsteira() {
+            const runBtn = document.getElementById('btn-run');
+            const clearBtn = document.getElementById('btn-clear');
+            runBtn.disabled = true; clearBtn.disabled = true;
+            
+            document.getElementById('status').textContent = "Testando...";
+            log("Iniciando bateria unitária sequencial...", "info");
+
+            let ok = 0; let err = 0;
+
+            for (const c of suites) {

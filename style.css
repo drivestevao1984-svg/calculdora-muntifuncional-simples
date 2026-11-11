@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Base Estrutural e de Fundo */
+body {
+    background-color: #121212; /* Preto Profundo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+/* Card Principal com Peso Visual em Roxo */
+.calculator-card {
+    background-color: #1a1a1a; /* Base escura estrutural */
+    width: 100%;
+    max-width: 600px;
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px solid #5B2D82; /* Roxo Intenso - Cor Dominante */
+    box-shadow: 0 15px 35px rgba(91, 45, 130, 0.25); /* Sombra roxa refinada */
+}
+
+/* Título em Off-White para Suavizar e Dar Respiro */
+h1 {
+    color: #F5F2EB; /* Off-White / Creme Neutro */
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 35px;
+}
+
+.input-group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.input-field {
+    position: relative;
+    flex: 1;
+}
+
+/* Roxo Médio como Transição Visual nos Rótulos */
+.input-field label {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background-color: #1a1a1a; 
+    padding: 0 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #8E44AD; /* Roxo Médio */
+    letter-spacing: 0.5px;
+}
+
+/* Inputs com Contraste em Off-White e Bordas Roxas */
+.input-field input {
+    width: 100%;
+    padding: 16px;
+    background-color: transparent;
+    border: 1.5px solid #5B2D82; /* Roxo Intenso */
+    border-radius: 12px;
+    font-size: 16px;
+    color: #F5F2EB; /* Off-White */
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.input-field input:focus {
+    border-color: #8E44AD; /* Transição para Roxo Médio no foco */
+    box-shadow: 0 0 10px rgba(142, 68, 173, 0.3);
+}
+
+/* Bloco Operação/Resultado com Fundo em Roxo de Peso Visual */
+.select-result-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #8E44AD; /* Roxo Médio */
+    border-radius: 12px;
+    background-color: #231232; /* Tom fechado e sofisticado de Roxo Dominante */
+    margin-bottom: 35px;
+    position: relative;
+}
+
+.select-result-container select {
+    flex: 1;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #F5F2EB; /* Off-White */
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 24px; /* Garante altura mínima mesmo vazio */
+}
+
+.select-result-container select option {
+    background-color: #231232;
+    color: #F5F2EB;
+}
+
+/* Indicador Visual em Roxo */
+.select-result-container::after {
+    content: '➔';
+    transform: rotate(90deg);
+    position: absolute;
+    right: 20px;
+    color: #8E44AD;
+    pointer-events: none;
+    font-size: 11px;
+}
+
+/* Texto Base do Resultado em Off-White */
+.result-display {
+    font-size: 16px;
+    font-weight: 600;
+    color: #F5F2EB; /* Off-White */
+    margin-right: 25px;
+    white-space: nowrap;
+}
+
+/* Ponto de Luz e Contraste Quente Estrito no Valor do Resultado */
+#result-value {
+    color: #CC7722; /* Amarelo Ocre */
+    font-weight: 700;
+}
+
+/* Botão de Destaque usando a Cor Quente para Ponto de Ação Único */
+#calculate-btn {
+    width: 100%;
+    background-color: #CC7722; /* Amarelo Ocre */
+    color: #121212; /* Texto em Preto Profundo para legibilidade máxima */
+    border: none;
+    padding: 18px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(204, 119, 34, 0.3);
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+#calculate-btn:hover {
+    background-color: #D4A359; /* Variação Dourada no foco */
+    box-shadow: 0 6px 25px rgba(212, 163, 89, 0.4);
+}
+
+#calculate-btn:active {
+    transform: scale(0.985);
+}
